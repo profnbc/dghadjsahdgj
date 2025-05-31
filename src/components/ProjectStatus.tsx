@@ -42,7 +42,7 @@ const ProjectStatus: React.FC = () => {
                   alt="Rank Badge" 
                   className="w-12 h-12 object-contain relative z-10"
                 />
-                <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-cyan-500/10 animate-pulse-slow"></div>
+                <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-cyan-500/10 animate-pulse"></div>
               </div>
             </div>
             <div className="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-gradient-to-br from-purple-500 to-cyan-400 p-0.5">
@@ -68,12 +68,15 @@ const ProjectStatus: React.FC = () => {
               <div className="absolute -left-2 -top-2 w-6 h-6 rounded-full bg-gradient-to-br from-purple-500/20 to-cyan-500/20 border border-purple-500/30 flex items-center justify-center">
                 <Sparkles size={12} className="text-cyan-400" />
               </div>
-              <div className="h-2 bg-gray-800/50 rounded-full overflow-hidden mt-2">
+              <div className="relative h-4 bg-gray-800/50 progress-bar-shape overflow-hidden mt-2">
                 <div 
-                  className="h-full bg-gradient-to-r from-purple-500 via-cyan-400 to-green-400 transition-all duration-1000 ease-out"
+                  className="h-full bg-[#00f0ff]/20 progress-bar-shape progress-bar-glow transition-all duration-1000 ease-out flex items-center"
                   style={{ width: `${rankProgress}%` }}
                 >
-                  <div className="w-full h-full opacity-50 animate-pulse"></div>
+                  <div className="w-full h-full progress-bar-grid"></div>
+                  <span className="absolute right-2 text-[#00f0ff] font-orbitron text-sm font-bold">
+                    {rankProgress}%
+                  </span>
                 </div>
               </div>
               <div className="mt-1 text-[10px] font-mono text-gray-500">
