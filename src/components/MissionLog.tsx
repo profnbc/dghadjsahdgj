@@ -18,6 +18,7 @@ const terminalMessages = [
 
 const MissionLog: React.FC = () => {
   const [visibleMessages, setVisibleMessages] = useState<typeof terminalMessages>([]);
+  const [scanPosition, setScanPosition] = useState(0);
   const terminalRef = useRef<HTMLDivElement>(null);
   
   useEffect(() => {
@@ -34,9 +35,15 @@ const MissionLog: React.FC = () => {
       
       timeouts.push(timeout);
     });
+
+    // Scanning animation
+    const scanInterval = setInterval(() => {
+      setScanPosition(prev => (prev >= 100 ? 0 : prev + 1));
+    }, 50);
     
     return () => {
       timeouts.forEach(clearTimeout);
+      clearInterval(scanInterval);
     };
   }, []);
   
@@ -57,7 +64,7 @@ const MissionLog: React.FC = () => {
       
       <div 
         ref={terminalRef}
-        className="bg-gray-950 rounded-lg border border-gray-800 p-4 h-[250px] overflow-y-auto font-mono text-sm leading-relaxed hide-scrollbar"
+        className="bg-gray-950 rounded-lg border border-gray-800 p-4 h-[250px] overflow-y-auto font-mono text-sm leading-relaxed hide-scrollbar relative"
       >
         <div className="space-y-2">
           {visibleMessages.map((message) => (
@@ -71,8 +78,50 @@ const MissionLog: React.FC = () => {
             <span className="w-3 h-5 bg-green-500 animate-pulse"></span>
           </div>
         </div>
+
+        {/* Scanning effect */}
+        <div 
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background: `linear-gradient(180deg, 
+              transparent ${scanPosition - 2}%, 
+              rgba(0, 240, 255, 0.1) ${scanPosition}%, 
+              transparent ${scanPosition + 2}%
+            )`
+          }}
+        ></div>
       </div>
-      
+
+      {/* System metrics */}
+      <div className="mt-4 grid grid-cols-2 gap-4">
+        <div className="bg-gray-950/50 rounded-lg p-3 border border-gray-800">
+          <div className="text-xs font-mono text-gray-500 mb-1">MEMORY USAGE</div>
+          <div className="flex items-center justify-between">
+            <div className="h-1 flex-1 bg-gray-800 rounded-full overflow-hidden mr-3">
+              <div 
+                className="h-full bg-cyan-400 progress-bar-grid"
+                style={{ width: '67%' }}
+              ></div>
+            </div>
+            <span className="text-xs font-mono text-cyan-400">67%</span>
+          </div>
+        </div>
+
+        <div className="bg-gray-950/50 rounded-lg p-3 border border-gray-800">
+          <div className="text-xs font-mono text-gray-500 mb-1">NETWORK LOAD</div>
+          <div className="flex items-center justify-between">
+            <div className="h-1 flex-1 bg-gray-800 rounded-full overflow-hidden mr-3">
+              <div 
+                className="h-full bg-purple-400 progress-bar-grid"
+                style={{ width: '82%' }}
+              ></div>
+            </div>
+            <span className="text-xs font-mono text-purple-400">82%</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Ambient effects */}
       <div className="absolute bottom-0 right-0 w-full h-40 pointer-events-none opacity-10">
         <div className="absolute bottom-0 right-0 w-60 h-60 bg-green-500 rounded-full filter blur-3xl"></div>
         <div className="absolute bottom-10 right-10 w-40 h-40 bg-purple-500 rounded-full filter blur-3xl"></div>
