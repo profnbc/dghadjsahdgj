@@ -19,6 +19,7 @@ const terminalMessages = [
 const MissionLog: React.FC = () => {
   const [visibleMessages, setVisibleMessages] = useState<typeof terminalMessages>([]);
   const [scanPosition, setScanPosition] = useState(0);
+  const [scannerRotation, setScannerRotation] = useState(0);
   const terminalRef = useRef<HTMLDivElement>(null);
   
   useEffect(() => {
@@ -40,10 +41,16 @@ const MissionLog: React.FC = () => {
     const scanInterval = setInterval(() => {
       setScanPosition(prev => (prev >= 100 ? 0 : prev + 1));
     }, 50);
+
+    // Scanner rotation
+    const rotationInterval = setInterval(() => {
+      setScannerRotation(prev => (prev + 1) % 360);
+    }, 30);
     
     return () => {
       timeouts.forEach(clearTimeout);
       clearInterval(scanInterval);
+      clearInterval(rotationInterval);
     };
   }, []);
   
@@ -90,33 +97,41 @@ const MissionLog: React.FC = () => {
             )`
           }}
         ></div>
-      </div>
 
-      {/* System metrics */}
-      <div className="mt-4 grid grid-cols-2 gap-4">
-        <div className="bg-gray-950/50 rounded-lg p-3 border border-gray-800">
-          <div className="text-xs font-mono text-gray-500 mb-1">MEMORY USAGE</div>
-          <div className="flex items-center justify-between">
-            <div className="h-1 flex-1 bg-gray-800 rounded-full overflow-hidden mr-3">
-              <div 
-                className="h-full bg-cyan-400 progress-bar-grid"
-                style={{ width: '67%' }}
-              ></div>
-            </div>
-            <span className="text-xs font-mono text-cyan-400">67%</span>
+        {/* Holographic Scanner */}
+        <div className="absolute bottom-4 right-4 w-24 h-24 group">
+          {/* Outer ring */}
+          <div 
+            className="absolute inset-0 rounded-full border-2 border-cyan-400/30 backdrop-blur-sm"
+            style={{ transform: `rotate(${scannerRotation}deg)` }}
+          >
+            {/* Scanner line */}
+            <div 
+              className="absolute top-1/2 left-1/2 w-full h-0.5 -translate-x-1/2 -translate-y-1/2 bg-gradient-to-r from-transparent via-cyan-400 to-transparent"
+              style={{ transform: `rotate(${scannerRotation * 2}deg)` }}
+            ></div>
           </div>
-        </div>
-
-        <div className="bg-gray-950/50 rounded-lg p-3 border border-gray-800">
-          <div className="text-xs font-mono text-gray-500 mb-1">NETWORK LOAD</div>
-          <div className="flex items-center justify-between">
-            <div className="h-1 flex-1 bg-gray-800 rounded-full overflow-hidden mr-3">
-              <div 
-                className="h-full bg-purple-400 progress-bar-grid"
-                style={{ width: '82%' }}
-              ></div>
-            </div>
-            <span className="text-xs font-mono text-purple-400">82%</span>
+          
+          {/* Inner ring */}
+          <div 
+            className="absolute inset-2 rounded-full border border-purple-500/30 group-hover:border-purple-500/50 transition-colors duration-300"
+            style={{ transform: `rotate(${-scannerRotation * 0.5}deg)` }}
+          ></div>
+          
+          {/* Center dot */}
+          <div className="absolute top-1/2 left-1/2 w-2 h-2 -translate-x-1/2 -translate-y-1/2 bg-cyan-400 rounded-full animate-pulse"></div>
+          
+          {/* Glow effects */}
+          <div className="absolute inset-0 rounded-full opacity-20 group-hover:opacity-40 transition-opacity duration-300"
+            style={{
+              background: `radial-gradient(circle, rgba(0,240,255,0.2) 0%, transparent 70%)`,
+              animation: 'pulse 2s infinite'
+            }}
+          ></div>
+          
+          {/* Status text */}
+          <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 whitespace-nowrap text-[10px] font-mono text-cyan-400/80">
+            SUBSPACE DIAGNOSTICS RUNNING...
           </div>
         </div>
       </div>
